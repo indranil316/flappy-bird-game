@@ -95,8 +95,12 @@ export default class PlayScene extends Phaser.Scene{
     restartGame(){
         this.physics.pause();
         this.bird.setTint(0xEE4824);
-        this.bird.x = this.initialBirdPosition.x;
-        this.bird.y = this.initialBirdPosition.y;
-        this.bird.body.velocity.y=0;
+        this.time.addEvent({
+            delay: 3000,
+            callback: () => {
+                this.scene.restart();
+            },
+            loop: false
+        })
     }
 }
