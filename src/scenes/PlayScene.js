@@ -14,6 +14,8 @@ export default class PlayScene extends Phaser.Scene{
       this.pipeHorizontalDistanceRamge = [400,500];
       this.totalPipes=8;
       this.pipes=null;
+      this.score=0;
+      this.scoreText='';
       this.flap = this.flap.bind(this);
       this.restartGame=this.restartGame.bind(this);
     }
@@ -27,6 +29,7 @@ export default class PlayScene extends Phaser.Scene{
         this.createBird();
         this.createPipes();
         this.createColidor();
+        this.createScore();
         this.handleInputs();
     }
     update(time, delta){
@@ -55,6 +58,10 @@ export default class PlayScene extends Phaser.Scene{
     createColidor = () =>{
         this.physics.add.collider(this.bird, this.pipes, this.restartGame);
     }
+    createScore = () => {
+        this.score=0;
+        this.scoreText = this.add.text(16,16, `Score = ${this.score}`, {fontSize: '32px', fill:'#000'});
+    }
     handleInputs = () => {
         this.input.on('pointerdown',this.flap);
         var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -78,6 +85,7 @@ export default class PlayScene extends Phaser.Scene{
           tempPipes.push(pipe);
           if(tempPipes.length === 2){
             this.placePipe(...tempPipes);
+            this.increaseScore();
           }      
         }
       })
@@ -91,6 +99,10 @@ export default class PlayScene extends Phaser.Scene{
     }
     flap(){
         this.bird.body.velocity.y = -this.velocity;
+    }
+    increaseScore = () => {
+        this.score++;
+        this.scoreText.setText(`Score: ${this.score}`);
     }
     restartGame(){
         this.physics.pause();
