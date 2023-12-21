@@ -16,6 +16,8 @@ export default class PlayScene extends Phaser.Scene{
       this.pipes=null;
       this.score=0;
       this.scoreText='';
+      this.bestScore = 0;
+      this.bestScoreText='';
       this.flap = this.flap.bind(this);
       this.restartGame=this.restartGame.bind(this);
     }
@@ -30,6 +32,7 @@ export default class PlayScene extends Phaser.Scene{
         this.createPipes();
         this.createColidor();
         this.createScore();
+        this.createBestScore();
         this.handleInputs();
     }
     update(time, delta){
@@ -62,6 +65,14 @@ export default class PlayScene extends Phaser.Scene{
         this.score=0;
         this.scoreText = this.add.text(16,16, `Score = ${this.score}`, {fontSize: '32px', fill:'#000'});
     }
+    createBestScore = () => {
+        this.bestScore = 0;
+        let bestScore = localStorage.getItem('bestScore');
+        if(bestScore){
+            this.bestScore = Number(bestScore);
+        }
+        this.bestScoreText = this.add.text(16,45,`Best Score: ${this.bestScore}`, {fontSize: '20px', fill:'#000 '});
+    }
     handleInputs = () => {
         this.input.on('pointerdown',this.flap);
         var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -85,7 +96,7 @@ export default class PlayScene extends Phaser.Scene{
           tempPipes.push(pipe);
           if(tempPipes.length === 2){
             this.placePipe(...tempPipes);
-            this.increaseScore();
+            this.increaseScore(); 
           }      
         }
       })
@@ -107,6 +118,10 @@ export default class PlayScene extends Phaser.Scene{
     restartGame(){
         this.physics.pause();
         this.bird.setTint(0xEE4824);
+        if(this.score> this.bestScore){
+            this.bestScore = this.score;
+            localStorage.setItem('bestScore', this.bestScore);
+        }
         this.time.addEvent({
             delay: 3000,
             callback: () => {
